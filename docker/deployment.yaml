@@ -1,0 +1,35 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: docker-react
+spec:
+  replicas: 2 # 副本
+  selector:
+    matchLabels:
+      app: docker-react
+  template:
+    metadata:
+      labels:
+        app: docker-react
+    spec:
+      containers:
+        - name: docker-react
+          image: localhost:5009/docker-react # 镜像地址，此处采用本地镜像仓库
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+      restartPolicy: Always
+--- # 分割线，分割多个不同的配置
+kind: Service
+apiVersion: v1
+metadata:
+  name: docker-react
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      nodePort: 30001 #映射到本机的30001端口
+  selector:
+    app: docker-react
